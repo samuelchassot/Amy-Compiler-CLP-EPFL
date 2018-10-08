@@ -14,6 +14,8 @@ class LexerTests extends TestSuite {
 
   @Test def testSingleAmp = shouldFail("SingleAmp")
 
-  @Test def testHello = shouldOutput("Hello")
+  @Test def testUnclosedComment = shouldFail("UnclosedComment")
+
+  @Test def testUnclosedStringLit = shouldFail("UnclosedStringLit")
 
 }
