@@ -58,7 +58,12 @@ object Parser extends Pipeline[Stream[Token], Program] {
   // You can start from the example above and work your way from there.
   // Make sure you use the warning (see `run` below) that tells you which part is not in LL1.
   lazy val amyGrammarLL1 = Grammar('Program, List[Rules[Token]](
-    ???
+
+
+
+    'Args ::= 'Expr ~ 'ExprList | epsilon(),
+    'ExprList ::= COMMA() ~ 'Expr ~ 'ExprList | epsilon(),
+    'Id ::= IDSENT
   ))
 
   def run(ctx: Context)(tokens: Stream[Token]): Program = {
