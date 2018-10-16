@@ -18,4 +18,12 @@ class LexerTests extends TestSuite {
 
   @Test def testUnclosedStringLit = shouldFail("UnclosedStringLit")
 
+  @Test def testIntLits = shouldOutput("IntLits")
+
+  @Test def testIntLitsTooBig = shouldFail("IntLitsTooBig")
+
+  @Test def testStringLit = shouldOutput("StringLit")
+
+  @Test def testuCom = shouldOutput("uCom")
+  //@Test def testUnclosedString = shouldOutput("StringLitUnclosed")
 }

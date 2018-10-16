@@ -71,14 +71,18 @@ object Lexer extends Pipeline[List[File], Stream[Token]] {
         nextToken(stream.dropWhile{ case (c, _) => Character.isWhitespace(c) } )
       } else if (currentChar == '/' && nextChar == '/') {
         // Single-line comment
-        nextToken(stream.dropWhile( {case(c, _) => c != '\n' || c != '\r' || c != EndOfFile} ))
+        val afterComments = stream.dropWhile( {case(c, _) => c != '\n' && c != '\r' && c != EndOfFile} )
+        if(afterComments.head._1 == EndOfFile) nextToken(afterComments) else nextToken(afterComments.tail)
       } else if (currentChar == '/' && nextChar == '*') {
         // Multi-line comment
         def removeUntilEndOfComment(str : Stream[(Char, Position)]) : Stream[(Char, Position)] = {
           val (curChar, cuPos) #:: rest = str
-          if(curChar == EndOfFile) (curChar, cuPos) #:: rest else if(curChar == '*' && rest.head._1 == '/') rest.tail else removeUntilEndOfComment(rest)
+          if(curChar == EndOfFile) (curChar, cuPos) #:: rest else
+              if(curChar == '*' && !rest.tail.isEmpty && rest.head._1 == '/') rest.tail else removeUntilEndOfComment(rest)
         }
-        val commRemoved = removeUntilEndOfComment(rest)
+
+        val commRemoved = removeUntilEndOfComment(rest.tail)
+        println(commRemoved.head._1)
         if (commRemoved.head._1 == EndOfFile) ctx.reporter.error("Unclosed comment", currentPos)
 
         nextToken(commRemoved)
@@ -130,9 +134,9 @@ object Lexer extends Pipeline[List[File], Stream[Token]] {
             case (c, _) => Character.isDigit(c)
           }
 
-          val numberString = i.map(_._1.toInt).mkString
+          val numberString = i.map(_._1).mkString
           val numBigInt = BigInt(numberString)
-          if(numBigInt.bitCount < 32) (INTLIT(numBigInt.toInt).setPos(currentPos), afterInt ) else {
+          if(numBigInt.equals(numBigInt.intValue())) (INTLIT(numBigInt.toInt).setPos(currentPos), afterInt ) else {
             ctx.reporter.error("to big number to fit in Int", currentPos)
             (BAD().setPos(currentPos), afterInt)
           }
@@ -140,16 +144,16 @@ object Lexer extends Pipeline[List[File], Stream[Token]] {
         // String literal
         case '"' =>
 
-          val (word, afterWord) = stream.tail.span{
-            case (c, _) => c != '"' && c != EndOfFile
+          val (word, afterWord) = rest.span{
+            case (c, _) => c != '"' && c != EndOfFile && c != '\n' && c != '\r'
           }
 
-          if(afterWord.head._1 == EndOfFile) {
+          if(afterWord.head._1 == EndOfFile || afterWord.head._1 == '\n' || afterWord.head._1 == '\r') {
             ctx.reporter.error("Unclosed string literal", currentPos)
             (BAD().setPos(currentPos), afterWord)
           } else {
-            val stringLit = word.tail.map(_._1).mkString
-            (STRINGLIT(stringLit).setPos(currentPos), afterWord)
+            val stringLit = word.map(_._1).mkString
+            (STRINGLIT(stringLit).setPos(currentPos), afterWord.tail)
           }
 
         // (You can look at Tokens.scala for an exhaustive list of tokens)
