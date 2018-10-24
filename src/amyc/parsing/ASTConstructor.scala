@@ -122,7 +122,6 @@ class ASTConstructor {
         tokenToExpr(t)
     }
   }
-
   def constructExpr(ptree: NodeOrLeaf[Token]): Expr = {
     ptree match {
       case Node('Expr ::= List('Id), List(id)) =>

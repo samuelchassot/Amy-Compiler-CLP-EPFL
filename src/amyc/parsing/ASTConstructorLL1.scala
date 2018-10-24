@@ -51,9 +51,9 @@ class ASTConstructorLL1 extends ASTConstructor {
     ptree match {
       case Node('lvl02 ::= List('lvl03, 'lvl02opt), List(lvl03Tree, lvl02optTree)) =>{
         lvl02optTree match{
-          case Node('lvl02Opt ::= (MATCH() :: _), List(Leaf(mt), _, casesTree, _)) =>
+          case Node('lvl02opt ::= (MATCH() :: _), List(Leaf(mt), _, casesTree, _)) =>
             Match(constructExprLvl03(lvl03Tree), constructList1(casesTree, constructCase))
-          case Node('lvl02Opt ::= List(), List()) =>
+          case Node('lvl02opt ::= List(), List()) =>
             constructExprLvl03(lvl03Tree)
         }
       }
@@ -64,9 +64,9 @@ class ASTConstructorLL1 extends ASTConstructor {
     ptree match {
       case Node('lvl03 ::= _, List(lvl04Tree, lvl03Opt)) => {
         lvl03Opt match{
-          case Node('lvl03Opt ::= List(OR(), 'lvl03), List(ort, lvl03Tree)) =>
+          case Node('lvl03opt ::= List(OR(), 'lvl03), List(ort, lvl03Tree)) =>
             constructOp(ort)(constructExprLvl04(lvl04Tree), constructExprLvl03(lvl03Tree))
-          case Node('lvl03Opt ::= List(), List()) =>
+          case Node('lvl03opt ::= List(), List()) =>
             constructExprLvl04(lvl04Tree)
         }
       }
@@ -77,9 +77,9 @@ class ASTConstructorLL1 extends ASTConstructor {
     ptree match {
       case Node('lvl04 ::= _, List(lvl05Tree, lvl04Opt)) =>
         lvl04Opt match{
-          case Node('lvl04Opt ::= List(AND(), 'lvl04), List(andt, lvl04Tree)) =>
+          case Node('lvl04opt ::= List(AND(), 'lvl04), List(andt, lvl04Tree)) =>
             constructOp(andt)(constructExprLvl05(lvl05Tree), constructExprLvl04(lvl04Tree))
-          case Node('lvl04Opt ::= List(), List()) =>
+          case Node('lvl04opt ::= List(), List()) =>
             constructExprLvl05(lvl05Tree)
         }
     }
@@ -89,9 +89,9 @@ class ASTConstructorLL1 extends ASTConstructor {
     ptree match {
       case Node('lvl05 ::= _, List(lvl06Tree, lvl05Opt)) =>
         lvl05Opt match{
-          case Node('lvl05Opt ::= List(EQUALS(), 'lvl05), List(eqt, lvl05Tree)) =>
+          case Node('lvl05opt ::= List(EQUALS(), 'lvl05), List(eqt, lvl05Tree)) =>
             constructOp(eqt)(constructExprLvl06(lvl06Tree), constructExprLvl05(lvl05Tree))
-          case Node('lvl05Opt ::= List(), List()) =>
+          case Node('lvl05opt ::= List(), List()) =>
             constructExprLvl06(lvl06Tree)
         }
     }
@@ -101,11 +101,11 @@ class ASTConstructorLL1 extends ASTConstructor {
     ptree match {
       case Node('lvl06 ::= _, List(lvl07Tree, lvl06Opt)) =>
         lvl06Opt match{
-          case Node('lvl06Opt ::= List(LESSTHAN(), 'lvl06), List(ltt, lvl06Tree)) =>
+          case Node('lvl06opt ::= List(LESSTHAN(), 'lvl06), List(ltt, lvl06Tree)) =>
             constructOp(ltt)(constructExprLvl07(lvl07Tree), constructExprLvl06(lvl06Tree))
-          case Node('lvl06Opt ::= List(LESSEQUALS(), 'lvl06), List(leqt, lvl06Tree)) =>
+          case Node('lvl06opt ::= List(LESSEQUALS(), 'lvl06), List(leqt, lvl06Tree)) =>
             constructOp(leqt)(constructExprLvl07(lvl07Tree), constructExprLvl06(lvl06Tree))
-          case Node('lvl05Opt ::= List(), List()) =>
+          case Node('lvl06opt ::= List(), List()) =>
             constructExprLvl07(lvl07Tree)
         }
     }
@@ -115,13 +115,13 @@ class ASTConstructorLL1 extends ASTConstructor {
     ptree match {
       case Node('lvl07 ::= _, List(lvl08Tree, lvl07Opt)) =>
         lvl07Opt match{
-          case Node('lvl07Opt ::= List(PLUS(), 'lvl07), List(pt, lvl07Tree)) =>
+          case Node('lvl07opt ::= List(PLUS(), 'lvl07), List(pt, lvl07Tree)) =>
             constructOp(pt)(constructExprLvl08(lvl08Tree), constructExprLvl07(lvl07Tree))
-          case Node('lvl07Opt ::= List(MINUS(), 'lvl07), List(mt, lvl07Tree)) =>
+          case Node('lvl07opt ::= List(MINUS(), 'lvl07), List(mt, lvl07Tree)) =>
             constructOp(mt)(constructExprLvl08(lvl08Tree), constructExprLvl07(lvl07Tree))
-          case Node('lvl07Opt ::= List(CONCAT(), 'lvl07), List(ct, lvl07Tree)) =>
+          case Node('lvl07opt ::= List(CONCAT(), 'lvl07), List(ct, lvl07Tree)) =>
             constructOp(ct)(constructExprLvl08(lvl08Tree), constructExprLvl07(lvl07Tree))
-          case Node('lvl07Opt ::= List(), List()) =>
+          case Node('lvl07opt ::= List(), List()) =>
             constructExprLvl08(lvl08Tree)
         }
     }
@@ -131,13 +131,13 @@ class ASTConstructorLL1 extends ASTConstructor {
     ptree match {
       case Node('lvl08 ::= _, List(lvl09Tree, lvl08Opt)) =>
         lvl08Opt match{
-          case Node('lvl08Opt ::= List(TIMES(), 'lvl08), List(tt, lvl08Tree)) =>
+          case Node('lvl08opt ::= List(TIMES(), 'lvl08), List(tt, lvl08Tree)) =>
             constructOp(tt)(constructExprLvl09(lvl09Tree), constructExprLvl08(lvl08Tree))
-          case Node('lvl08Opt ::= List(DIV(), 'lvl08), List(dt, lvl08Tree)) =>
+          case Node('lvl08opt ::= List(DIV(), 'lvl08), List(dt, lvl08Tree)) =>
             constructOp(dt)(constructExprLvl09(lvl09Tree), constructExprLvl08(lvl08Tree))
-          case Node('lvl08Opt ::= List(MOD(), 'lvl08), List(modt, lvl08Tree)) =>
+          case Node('lvl08opt ::= List(MOD(), 'lvl08), List(modt, lvl08Tree)) =>
             constructOp(modt)(constructExprLvl09(lvl09Tree), constructExprLvl08(lvl08Tree))
-          case Node('lvl08Opt ::= List(), List()) =>
+          case Node('lvl08opt ::= List(), List()) =>
             constructExprLvl09(lvl09Tree)
         }
     }
@@ -149,7 +149,7 @@ class ASTConstructorLL1 extends ASTConstructor {
         Not(constructExprLvl10(lvl10Tree))
       case Node('lvl09 ::= List(MINUS(), 'lvl10), List(Leaf(mt), lvl10Tree)) =>
         Neg(constructExprLvl10(lvl10Tree))
-      case Node('lvl10 ::= List('lvl10), List(lvl10Tree)) =>
+      case Node('lvl09 ::= List('lvl10), List(lvl10Tree)) =>
         constructExprLvl10(lvl10Tree)
 
     }
@@ -209,6 +209,20 @@ class ASTConstructorLL1 extends ASTConstructor {
     }
   }
 
+  override def constructLiteral(pTree: NodeOrLeaf[Token]): Literal[_] = {
+    pTree match {
+      case Node('LiteralWithoutUnit ::= List(INTLITSENT), List(Leaf(it@INTLIT(i)))) =>
+        IntLiteral(i).setPos(it)
+      case Node('LiteralWithoutUnit ::= List(STRINGLITSENT), List(Leaf(st@STRINGLIT(s)))) =>
+        StringLiteral(s).setPos(st)
+      case Node('LiteralWithoutUnit ::= _, List(Leaf(tt@TRUE()))) =>
+        BooleanLiteral(true).setPos(tt)
+      case Node('LiteralWithoutUnit ::= _, List(Leaf(tf@FALSE()))) =>
+        BooleanLiteral(false).setPos(tf)
+    }
+  }
+
+
   @Override
   override def constructPattern(pTree: NodeOrLeaf[Token]): NominalTreeModule.Pattern = {
     pTree match {
@@ -247,13 +261,18 @@ class ASTConstructorLL1 extends ASTConstructor {
 
 
     }
+
+  }
+
+
+  override def constructOp(ptree: NodeOrLeaf[Token]): (Expr, Expr) => Expr = {
+    (ptree : @unchecked) match {
+      case Leaf(t) => tokenToExpr(t)
+    }
   }
 
 
 
-
-
-  
 
   // Important helper method:
   // Because LL1 grammar is not helpful in implementing left associativity,
