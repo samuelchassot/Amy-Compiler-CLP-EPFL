@@ -75,8 +75,8 @@ object Parser extends Pipeline[Stream[Token], Program] {
     'QNameOpt ::= DOT() ~ 'Id | epsilon(),
 
     'Expr ::= 'lvl01 | 'StartVal,
-    'StartVal ::= VAL() ~ 'Param ~ EQSIGN() ~ 'lvl02 ~ SEMICOLON() ~ 'Expr
-    'lvl01 ::= 'lvl02 ~ 'lvl01opt |,
+    'StartVal ::= VAL() ~ 'Param ~ EQSIGN() ~ 'lvl02 ~ SEMICOLON() ~ 'Expr,
+    'lvl01 ::= 'lvl02 ~ 'lvl01opt ,
     'lvl01opt ::= SEMICOLON() ~ 'lvl01optopt | epsilon(),
     'lvl01optopt ::= 'StartVal | 'lvl01,
     'lvl02 ::= 'lvl03 ~ 'lvl02opt,
