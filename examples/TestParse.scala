@@ -1,12 +1,13 @@
-object Foo {
-  def test(x: Int): Int = {
-    x + 2
+object Foo{
+
+  x match {
+    case y => 3
+    case x.y(()) => 3
+    case Nil() => y match {
+      case Nil() => 2
+      case True => 2
+    }
+    case True => 1
+    case "Salut" => 3
   }
-
-  Foo.test(2);
-  1 + 2 + 2;
-  1 + 1;
-  True || False && True;
-  if(if(True){x} else {y}){x} else {y}
-
 }
