@@ -160,7 +160,9 @@ object NameAnalyzer extends Pipeline[N.Program, (S.Program, SymbolTable)] {
           // from strings to unique identifiers for names bound in the pattern.
           // Also, calls 'fatal' if a new name violates the Amy naming rules.
           def transformPattern(pat: N.Pattern): (S.Pattern, List[(String, Identifier)]) = {
-            ???  // TODO
+            pat match{
+              case N.Pattern.WildCardPattern() => (S.WildCardPattern(), Nil)
+            }
           }
 
           def transformCase(cse: N.MatchCase) = {
