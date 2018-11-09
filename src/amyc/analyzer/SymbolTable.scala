@@ -19,7 +19,7 @@ case class ConstrSig(argTypes: List[Type], parent: Identifier, index: Int) exten
 
 // A class that represents a dictionary of symbols for an Amy program
 class SymbolTable {
-  private val defsByName = HashMap[(String, String), Identifier]()
+    private val defsByName = HashMap[(String, String), Identifier]()
   private val modules = HashMap[String, Identifier]()
 
   private val types = HashMap[Identifier, Identifier]()

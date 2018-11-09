@@ -161,8 +161,52 @@ object NameAnalyzer extends Pipeline[N.Program, (S.Program, SymbolTable)] {
           // Also, calls 'fatal' if a new name violates the Amy naming rules.
           def transformPattern(pat: N.Pattern): (S.Pattern, List[(String, Identifier)]) = {
             pat match{
-              case N.Pattern.WildCardPattern() => (S.WildCardPattern(), Nil)
+              case N.WildcardPattern() => (S.WildcardPattern(), Nil)
+              case N.IdPattern(name) => {
+                val opt = table.getConstructor(module, name)
+                if (opt.isEmpty) {
+                  warning(s"Do you mean $name()", pat.position)
+                }
+                if (names._2.contains(name)) {
+                  fatal(s"a variable with the name $name already exists in this scope", pat.position)
+                }
+                if (names._1.contains(name)) {
+                  warning(s"The variable with the name $name will shadow the parameter with name $name", pat.position)
+                }
+
+                val id = Identifier.fresh(name)
+                names._2 + (name, id)
+                (S.IdPattern(id), List((name, id)))
+              }
+
+              case N.LiteralPattern(valueLit) => {
+                valueLit match{
+                  case N.IntLiteral(value) => (S.LiteralPattern(S.IntLiteral(value)).setPos(pat), Nil)
+                  case N.BooleanLiteral(value) => (S.LiteralPattern(S.BooleanLiteral(value)).setPos(pat), Nil)
+                  case N.StringLiteral(value) => (S.LiteralPattern(S.StringLiteral(value)).setPos(pat), Nil)
+                  case N.UnitLiteral() => (S.LiteralPattern(S.UnitLiteral()).setPos(pat), Nil)
+                }
+              }
+
+              case N.CaseClassPattern(constr, args) =>{
+                val constrModule = if(constr.module.isEmpty) module else constr.module.get
+                val opt = table.getConstructor(module, constr.name)
+                if(opt.isEmpty){
+                  fatal(s"Cannot find the Constructor $module.$name in the scope", pat.position)
+                }
+                def constructArgs(args : List[N.Pattern]) : List[(S.Pattern, List[(String, Identifier)])] = {
+                  args match{
+                    case arg :: tail => transformPattern(arg)::constructArgs(tail)
+                    case Nil => Nil
+                  }
+                }
+                val constructedArgs = constructedArgs(args)
+                val sArgs = constructedArgs.map(_._1)
+                val patterns = constructedArgs.map(_._2)
+              }
+
             }
+
           }
 
           def transformCase(cse: N.MatchCase) = {
