@@ -164,18 +164,17 @@ object NameAnalyzer extends Pipeline[N.Program, (S.Program, SymbolTable)] {
               case N.WildcardPattern() => (S.WildcardPattern(), Nil)
               case N.IdPattern(name) => {
                 val opt = table.getConstructor(module, name)
-                if (opt.isEmpty) {
+                if (!opt.isEmpty) {
                   warning(s"Do you mean $name()", pat.position)
                 }
-                if (names._2.contains(name)) {
+                if (locals.contains(name)) {
                   fatal(s"a variable with the name $name already exists in this scope", pat.position)
                 }
-                if (names._1.contains(name)) {
+                if (params.contains(name)) {
                   warning(s"The variable with the name $name will shadow the parameter with name $name", pat.position)
                 }
 
                 val id = Identifier.fresh(name)
-                names._2 + (name, id)
                 (S.IdPattern(id), List((name, id)))
               }
 
@@ -202,7 +201,9 @@ object NameAnalyzer extends Pipeline[N.Program, (S.Program, SymbolTable)] {
                 }
                 val constructedArgs = constructedArgs(args)
                 val sArgs = constructedArgs.map(_._1)
-                val patterns = constructedArgs.map(_._2)
+                val nameToId = constructedArgs.map(_._2).foldLeft(Nil)(_::_)
+
+                (S.CaseClassPattern(opt.get._1, sArgs), nameToId)
               }
 
             }
@@ -212,13 +213,40 @@ object NameAnalyzer extends Pipeline[N.Program, (S.Program, SymbolTable)] {
           def transformCase(cse: N.MatchCase) = {
             val N.MatchCase(pat, rhs) = cse
             val (newPat, moreLocals) = transformPattern(pat)
-            ???  // TODO
+              S.MatchCase(newPat, transformExpr(rhs)(module , (params, locals ++ moreLocals)))
           }
 
           S.Match(transformExpr(scrut), cases.map(transformCase))
 
-        case _ =>
-          ???  // TODO: Implement the rest of the cases
+        case N.Plus(lhs, rhs) => S.Plus(transformExpr(lhs), transformExpr(rhs))
+        case N.Minus(lhs, rhs) => S.Minus(transformExpr(lhs), transformExpr(rhs))
+        case N.Times(lhs, rhs) => S.Times(transformExpr(lhs), transformExpr(rhs))
+        case N.Div(lhs, rhs) => S.Div(transformExpr(lhs), transformExpr(rhs))
+        case N.Mod(lhs, rhs) => S.Mod(transformExpr(lhs), transformExpr(rhs))
+        case N.LessThan(lhs, rhs) => S.LessThan(transformExpr(lhs), transformExpr(rhs))
+        case N.LessEquals(lhs, rhs) => S.LessEquals(transformExpr(lhs), transformExpr(rhs))
+        case N.And(lhs, rhs) => S.And(transformExpr(lhs), transformExpr(rhs))
+        case N.Or(lhs, rhs) => S.Or(transformExpr(lhs), transformExpr(rhs))
+        case N.Equals(lhs, rhs) => S.Equals(transformExpr(lhs), transformExpr(rhs))
+        case N.Concat(lhs, rhs) => S.Concat(transformExpr(lhs), transformExpr(rhs))
+
+        case N.Not(e) => S.Not(transformExpr(e))
+        case N.Neg(e) =>  S.Neg(transformExpr(e))
+
+        case N.Call(qname, args) => {
+          val funModule = if(qname.module.isEmpty) module else qname.module.get
+          val opt = table.getFunction(funModule, qname.name)
+          if(opt.isEmpty){
+            fatal(s"function $name does not exist in $module", expr.position)
+          }
+          def transformArgs(args : List[Expr]): List[S.Expr] = {
+            args match{
+              case arg :: tail => transformExpr(arg) :: transformArgs(tail)
+              case Nil => Nil
+            }
+          }
+          S.Call(opt.get._1, transformArgs(args))
+        }
       }
       res.setPos(expr)
     }
