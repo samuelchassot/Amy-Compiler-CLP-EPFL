@@ -39,11 +39,17 @@ object TypeChecker extends Pipeline[(Program, SymbolTable), (Program, SymbolTabl
       e match {
         case IntLiteral(_) =>
           topLevelConstraint(IntType)
-        
+        case BooleanLiteral(_) =>
+          topLevelConstraint(BooleanType)
+        case StringLiteral(_) =>
+          topLevelConstraint(StringType)
+        case UnitLiteral() =>
+          topLevelConstraint(UnitType)
+
         case Equals(lhs, rhs) => {
           // HINT: Take care to implement the specified Amy semantics
           val newTypeVariable = TypeVariable.fresh()
-          genConstraints(lhs, newTypeVariable) ::: genConstraints(rhs, newTypeVariable)
+          topLevelConstraint(BooleanType) ::: genConstraints(lhs, newTypeVariable) ::: genConstraints(rhs, newTypeVariable)
         }
         
         case Match(scrut, cases) =>
@@ -58,28 +64,71 @@ object TypeChecker extends Pipeline[(Program, SymbolTable), (Program, SymbolTabl
               case WildcardPattern() => (Nil, Map.empty)
               case IdPattern(name) => {
                 val newType = TypeVariable.fresh()
-                (Constraint(newType, scrutExpected, pat.position)::Nil, (name, newType)::Map.Empty)
+                (Constraint(newType, scrutExpected, pat.position)::Nil, Map[Identifier, Type](name -> newType) )
               }
               case LiteralPattern(value) => (genConstraints(value, scrutExpected), Map.empty)
 
               case CaseClassPattern(qname, args) => {
-                val constrConstraint = Constraint(table.getConstructor(qname).get.retType, scrutExpected, pat.position)
-                
+                val constructor = table.getConstructor(qname).get
+                val constrConstraint = Constraint(constructor.retType, scrutExpected, pat.position)
+                val handledArgs = args.zip(constructor.argTypes).map(p => handlePattern(p._1, p._2))
+
+                val constraintsList = constrConstraint :: handledArgs.flatMap(_._1)
+                val mapName = handledArgs.flatMap(_._2)
+
+                (constraintsList, mapName.toMap)
               }
             }
 
           }
-
+          val newTypeForBody = TypeVariable.fresh()
           def handleCase(cse: MatchCase, scrutExpected: Type): List[Constraint] = {
             val (patConstraints, moreEnv) = handlePattern(cse.pat, scrutExpected)
-            ???  // TODO
+            patConstraints ::: genConstraints(cse.expr, newTypeForBody)(env ++ moreEnv)
+
           }
 
           val st = TypeVariable.fresh()
           genConstraints(scrut, st) ++ cases.flatMap(cse => handleCase(cse, st))
 
-        case _ =>
-          ???  // TODO: Implement the remaining cases
+          topLevelConstraint(newTypeForBody)
+
+        case Plus(lhs, rhs) => topLevelConstraint(IntType) ::: genConstraints(lhs, IntType) ::: genConstraints(rhs, IntType)
+        case Minus(lhs, rhs) => topLevelConstraint(IntType) ::: genConstraints(lhs, IntType) ::: genConstraints(rhs, IntType)
+        case Times(lhs, rhs) => topLevelConstraint(IntType) ::: genConstraints(lhs, IntType) ::: genConstraints(rhs, IntType)
+        case Div(lhs, rhs) => topLevelConstraint(IntType) ::: genConstraints(lhs, IntType) ::: genConstraints(rhs, IntType)
+        case Mod(lhs, rhs) => topLevelConstraint(IntType) ::: genConstraints(lhs, IntType) ::: genConstraints(rhs, IntType)
+        case LessThan(lhs, rhs) => topLevelConstraint(BooleanType) ::: genConstraints(lhs, IntType) ::: genConstraints(rhs, IntType)
+        case LessEquals(lhs, rhs) => topLevelConstraint(BooleanType) ::: genConstraints(lhs, IntType) ::: genConstraints(rhs, IntType)
+        case And(lhs, rhs) => topLevelConstraint(BooleanType) ::: genConstraints(lhs, BooleanType) ::: genConstraints(rhs, BooleanType)
+        case Or(lhs, rhs) => topLevelConstraint(BooleanType) ::: genConstraints(lhs, BooleanType) ::: genConstraints(rhs, BooleanType)
+        case Concat(lhs, rhs) => topLevelConstraint(StringType) ::: genConstraints(lhs, StringType) ::: genConstraints(rhs, StringType)
+        case Not(ex) => topLevelConstraint(BooleanType) ::: genConstraints(ex, BooleanType)
+        case Neg(ex) => topLevelConstraint(IntType) ::: genConstraints(ex, IntType)
+
+        case Sequence(exp1, exp2) => {
+          val expType = TypeVariable.fresh()
+          genConstraints(exp1, TypeVariable.fresh()) ::: genConstraints(exp2, expType) ::: topLevelConstraint(expType)
+        }
+        case Call(qname, args) => {
+          val fun = table.getFunction(qname).get
+          val handledArgs = args.zip(fun.argTypes).map(p => genConstraints(p._1, p._2))
+          topLevelConstraint(fun.retType) ::: handledArgs.flatten
+        }
+        case Let(df, value, body) => {
+          val newType = TypeVariable.fresh()
+          val valType = df.tt.tpe
+          topLevelConstraint(newType) ::: genConstraints(value, valType) ::: genConstraints(body, newType)(Map(df.name -> valType) ++ env)
+        }
+
+        case Ite(cond, thenn, elze) => {
+          val newType = TypeVariable.fresh()
+          topLevelConstraint(newType) ::: genConstraints(cond, BooleanType) ::: genConstraints(thenn, newType) ::: genConstraints(elze, newType)
+        }
+        case Error(msg) => {
+          val newType = TypeVariable.fresh()
+          topLevelConstraint(newType) ::: genConstraints(msg, StringType)
+        }
       }
     }
 
