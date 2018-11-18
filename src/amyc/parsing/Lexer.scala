@@ -92,6 +92,8 @@ object Lexer extends Pipeline[List[File], Stream[Token]] {
       }
     }
 
+
+
     /** Reads the next token from the stream. Assumes no whitespace or comments at the beginning.
       * Returns the first token and the remaining input that did not get consumed.
       */

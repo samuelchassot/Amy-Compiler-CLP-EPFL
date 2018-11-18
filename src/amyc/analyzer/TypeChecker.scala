@@ -40,9 +40,11 @@ object TypeChecker extends Pipeline[(Program, SymbolTable), (Program, SymbolTabl
         case IntLiteral(_) =>
           topLevelConstraint(IntType)
         
-        case Equals(lhs, rhs) =>
+        case Equals(lhs, rhs) => {
           // HINT: Take care to implement the specified Amy semantics
-          ???  // TODO
+          val newTypeVariable = TypeVariable.fresh()
+          genConstraints(lhs, newTypeVariable) ::: genConstraints(rhs, newTypeVariable)
+        }
         
         case Match(scrut, cases) =>
           // Returns additional constraints from within the pattern with all bindings
@@ -51,7 +53,21 @@ object TypeChecker extends Pipeline[(Program, SymbolTable), (Program, SymbolTabl
           def handlePattern(pat: Pattern, scrutExpected: Type):
             (List[Constraint], Map[Identifier, Type]) =
           {
-            ???  // TODO
+
+            pat match{
+              case WildcardPattern() => (Nil, Map.empty)
+              case IdPattern(name) => {
+                val newType = TypeVariable.fresh()
+                (Constraint(newType, scrutExpected, pat.position)::Nil, (name, newType)::Map.Empty)
+              }
+              case LiteralPattern(value) => (genConstraints(value, scrutExpected), Map.empty)
+
+              case CaseClassPattern(qname, args) => {
+                val constrConstraint = Constraint(table.getConstructor(qname).get.retType, scrutExpected, pat.position)
+                
+              }
+            }
+
           }
 
           def handleCase(cse: MatchCase, scrutExpected: Type): List[Constraint] = {
