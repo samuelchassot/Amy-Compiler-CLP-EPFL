@@ -129,6 +129,10 @@ object TypeChecker extends Pipeline[(Program, SymbolTable), (Program, SymbolTabl
           val newType = TypeVariable.fresh()
           topLevelConstraint(newType) ::: genConstraints(msg, StringType)
         }
+        case Variable(name) => {
+          val variableType = env.get(name).get
+          topLevelConstraint(variableType)
+        }
       }
     }
 
@@ -158,7 +162,22 @@ object TypeChecker extends Pipeline[(Program, SymbolTable), (Program, SymbolTabl
         case Constraint(found, expected, pos) :: more =>
           // HINT: You can use the `subst_*` helper above to replace a type variable
           //       by another type in your current set of constraints.
-          ???  // TODO
+          found match{
+            case tv : TypeVariable => solveConstraints(subst_*(more, tv.id, expected))
+            case t : Type => {
+              expected match{
+                case tvExpec : TypeVariable => solveConstraints(Constraint(tvExpec, t, pos) :: more)
+                case tExpec : Type => {
+                  if(t == expected) solveConstraints(more) else {
+                    val foundName = t.toString()
+                    val expectedName = expected.toString()
+                    ctx.reporter.error(s"type $foundName does not conform expected type $expectedName", pos)
+                  }
+                }
+              }
+
+            }
+          }
       }
     }
 
