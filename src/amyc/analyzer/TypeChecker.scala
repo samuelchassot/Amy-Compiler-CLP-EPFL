@@ -85,13 +85,10 @@ object TypeChecker extends Pipeline[(Program, SymbolTable), (Program, SymbolTabl
           def handleCase(cse: MatchCase, scrutExpected: Type): List[Constraint] = {
             val (patConstraints, moreEnv) = handlePattern(cse.pat, scrutExpected)
             patConstraints ::: genConstraints(cse.expr, newTypeForBody)(env ++ moreEnv)
-
           }
 
           val st = TypeVariable.fresh()
-          genConstraints(scrut, st) ++ cases.flatMap(cse => handleCase(cse, st))
-
-          topLevelConstraint(newTypeForBody)
+          genConstraints(scrut, st) ++ cases.flatMap(cse => handleCase(cse, st)) ++ topLevelConstraint(newTypeForBody)
 
         case Plus(lhs, rhs) => topLevelConstraint(IntType) ::: genConstraints(lhs, IntType) ::: genConstraints(rhs, IntType)
         case Minus(lhs, rhs) => topLevelConstraint(IntType) ::: genConstraints(lhs, IntType) ::: genConstraints(rhs, IntType)
@@ -111,9 +108,16 @@ object TypeChecker extends Pipeline[(Program, SymbolTable), (Program, SymbolTabl
           genConstraints(exp1, TypeVariable.fresh()) ::: genConstraints(exp2, expType) ::: topLevelConstraint(expType)
         }
         case Call(qname, args) => {
-          val fun = table.getFunction(qname).get
-          val handledArgs = args.zip(fun.argTypes).map(p => genConstraints(p._1, p._2))
-          topLevelConstraint(fun.retType) ::: handledArgs.flatten
+          val fun = table.getFunction(qname)
+          val constr = table.getConstructor(qname)
+          if (fun.isDefined){
+            val handledArgs = args.zip(fun.get.argTypes).map(p => genConstraints(p._1, p._2))
+            topLevelConstraint(fun.get.retType) ::: handledArgs.flatten
+          } else {
+            val handledArgs = args.zip(constr.get.argTypes).map(p => genConstraints(p._1, p._2))
+            topLevelConstraint(constr.get.retType) ::: handledArgs.flatten
+          }
+
         }
         case Let(df, value, body) => {
           val newType = TypeVariable.fresh()
