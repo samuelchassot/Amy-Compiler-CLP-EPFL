@@ -2,8 +2,8 @@ package amyc
 package codegen
 
 import analyzer._
-import ast.Identifier
-import ast.SymbolicTreeModule.{Call => AmyCall, Div => AmyDiv, And => AmyAnd, Or => AmyOr, _}
+import ast.{Identifier, SymbolicTreeModule}
+import ast.SymbolicTreeModule.{And => AmyAnd, Call => AmyCall, Div => AmyDiv, Or => AmyOr, _}
 import utils.{Context, Pipeline}
 import wasm._
 import Instructions._
@@ -51,8 +51,96 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
     // fresh local slots as required.
     def cgExpr(expr: Expr)(implicit locals: Map[Identifier, Int], lh: LocalsHandler): Code = {
       expr match {
+        //Literals
         case Variable(name) => 
-          GetLocal(locals.get(name))
+          GetLocal(locals.get(name).get)
+        case IntLiteral(value) =>
+          Const(value)
+        case BooleanLiteral(value) =>
+          if (value) Const(1) else Const(0)
+        case StringLiteral(value) =>
+          Utils.mkString(value)
+        case UnitLiteral() =>
+          Const(0)
+
+        //Binary operations
+        case Plus(lhs, rhs) =>
+          cgExpr(lhs) <:>
+          cgExpr(rhs) <:>
+          Add
+        case Minus(lhs, rhs) =>
+          cgExpr(lhs) <:>
+          cgExpr(rhs) <:>
+          Sub
+        case Times(lhs, rhs) =>
+          cgExpr(lhs) <:>
+          cgExpr(rhs) <:>
+          Mul
+        case SymbolicTreeModule.Div(lhs, rhs) =>
+          cgExpr(lhs) <:>
+          cgExpr(rhs) <:>
+          Div
+        case Mod(lhs, rhs) =>
+          cgExpr(lhs) <:>
+          cgExpr(rhs) <:>
+          Rem
+        case LessThan(lhs, rhs) =>
+          cgExpr(lhs) <:>
+          cgExpr(rhs) <:>
+          Lt_s
+        case LessEquals(lhs, rhs) =>
+          cgExpr(lhs) <:>
+          cgExpr(rhs) <:>
+          Le_s
+        case SymbolicTreeModule.And(lhs, rhs) =>
+          cgExpr(lhs) <:>
+          cgExpr(rhs) <:>
+          And
+        case SymbolicTreeModule.Or(lhs, rhs) =>
+          cgExpr(lhs) <:>
+          cgExpr(rhs) <:>
+          Or
+        case Equals(lhs, rhs) =>
+          cgExpr(lhs) <:>
+          cgExpr(rhs) <:>
+          Eq
+        case Concat(lhs, rhs) =>
+          cgExpr(lhs) <:>
+          cgExpr(rhs) <:>
+          Utils.concatImpl.code
+
+        //unary operator
+        case Not(expr) =>
+          cgExpr(expr) <:>
+          Eqz
+        case Neg(expr) =>
+          Const(0) <:>
+          cgExpr(expr) <:>
+          Sub
+
+
+        case Ite(cond, thenn, elze) =>
+          cgExpr(cond) <:>
+          If_i32 <:>
+          cgExpr(thenn) <:>
+          Else <:>
+          cgExpr(elze) <:>
+          End
+
+        case Let(df, value, body) =>
+          val id = lh.getFreshLocal()
+          cgExpr(value) <:>
+          SetLocal(id) <:>
+          cgExpr(body)(locals + ((df.name, id)), lh)
+
+        case Sequence(expr1, expr2) =>
+          cgExpr(expr1) <:>
+          Drop <:>
+          cgExpr(expr2) <:>
+          Drop
+
+        
+
       }
     }
 
