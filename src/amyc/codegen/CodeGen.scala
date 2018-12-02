@@ -136,10 +136,16 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
         case Sequence(expr1, expr2) =>
           cgExpr(expr1) <:>
           Drop <:>
-          cgExpr(expr2) <:>
-          Drop
+          cgExpr(expr2)
 
-        
+        case Error(msg) =>
+          cgExpr(msg) <:>
+          //here printString but don't know how to do it
+          Unreachable
+
+
+        //Definitions
+
 
       }
     }
