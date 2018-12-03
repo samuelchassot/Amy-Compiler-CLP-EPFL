@@ -50,6 +50,51 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
     // their index in the wasm local variables, and a LocalsHandler which will generate
     // fresh local slots as required.
     def cgExpr(expr: Expr)(implicit locals: Map[Identifier, Int], lh: LocalsHandler): Code = {
+      def matchAndBind(p: Pattern): Code = {
+        //assume v is on the stack, matchAndBind consumes it and push the boolean
+        p match {
+          case WildcardPattern() => Const(1) //return true
+          case IdPattern(id) =>
+            //store v in the Local id
+            SetLocal(id) <:>
+              //return true
+              Const(1)
+          case LiteralPattern(lit) =>
+            cgExpr(lit) <:>
+              Eq
+          case CaseClassPattern(constr, args) =>
+            val constrSig = table.getConstructor(constr).get
+            val vPtr = lh.getFreshLocal()
+            val adtInMem = lh.getFreshLocal()
+            val mbargs = for(pat <- args) yield {
+              GetLocal(adtInMem) <:> Const(4) <:> Add <:> SetLocal(adtInMem) <:> GetLocal(adtInMem) <:> Load <:>
+                //Now the pattern is loaded on the stack
+                matchAndBind(pat) <:>
+                And
+
+            }
+
+            //store v because will be needed
+            SetLocal(vPtr) <:>
+              GetLocal(vPtr) <:>
+              Load <:>
+              //Constructor's index is on the stack
+              Const(constrSig.index) <:>
+              Eq <:>
+              If_i32 <:>
+              //matchAndBind every arguments
+              GetLocal(vPtr) <:> SetLocal(adtInMem) <:>
+              //load a true (base case like for foldLeft)
+              Const(1) <:>
+              mbargs <:>
+              Else <:>
+              //Constructor doesn't match so return false
+              Const(0) <:>
+              End
+          case _ =>
+            Unreachable
+        }
+      }
       expr match {
         //Literals
         case Variable(name) => 
@@ -76,7 +121,7 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
           cgExpr(lhs) <:>
           cgExpr(rhs) <:>
           Mul
-        case SymbolicTreeModule.Div(lhs, rhs) =>
+        case AmyDiv(lhs, rhs) =>
           cgExpr(lhs) <:>
           cgExpr(rhs) <:>
           Div
@@ -92,14 +137,20 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
           cgExpr(lhs) <:>
           cgExpr(rhs) <:>
           Le_s
-        case SymbolicTreeModule.And(lhs, rhs) =>
+        case AmyAnd(lhs, rhs) =>
           cgExpr(lhs) <:>
+          If_i32 <:>
           cgExpr(rhs) <:>
-          And
-        case SymbolicTreeModule.Or(lhs, rhs) =>
+          Else <:>
+          Const(0) <:>
+          End
+        case AmyOr(lhs, rhs) =>
           cgExpr(lhs) <:>
+          If_i32 <:>
+          Const(1) <:>
+          Else <:>
           cgExpr(rhs) <:>
-          Or
+          End
         case Equals(lhs, rhs) =>
           cgExpr(lhs) <:>
           cgExpr(rhs) <:>
@@ -117,7 +168,6 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
           Const(0) <:>
           cgExpr(expr) <:>
           Sub
-
 
         case Ite(cond, thenn, elze) =>
           cgExpr(cond) <:>
@@ -140,14 +190,66 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
 
         case Error(msg) =>
           cgExpr(msg) <:>
-          //here printString but don't know how to do it
+          Call("Std_printString") <:>
           Unreachable
 
 
-        //Definitions
+        case AmyCall(qname, args) =>
+          val optFun = table.getFunction(qname)
+          if(optFun.isDefined){
+            //Load args on the stack
+            args.map(cgExpr(_)) <:>
+            //call the function
+            Call(qname.fullName)
+          }else{
+            val constrSig = table.getConstructor(qname).get
+            //we know it 's defined due to type- and name analysis
+            val index = constrSig.index
+
+            val incrementMemBound = Const(4) <:> GetGlobal(memoryBoundary) <:> Add <:> SetGlobal(memoryBoundary)
+
+            val storeArgs = for(arg <- args) yield {
+                cgExpr(arg) <:> SetGlobal(memoryBoundary) <:> incrementMemBound
+              }
+
+            //return the old memoryBoundary (where index is stored) to the caller by putting it on the stack
+            GetGlobal(memoryBoundary) <:>
+            //store constructor's index
+            Const(index) <:> SetGlobal(memoryBoundary) <:>
+            //increment memory pointer
+            incrementMemBound <:>
+            storeArgs
+          }
+
+        case Match(scrut, cases) =>
+          val scrutLocalPtr = lh.getFreshLocal()
+          def handleOneCase(lCases: List[MatchCase]): Code ={
+            lCases match{
+              case cse :: tail =>
+                GetLocal(scrutLocalPtr) <:>
+                matchAndBind(cse.pat) <:>
+                If_i32 <:>
+                cgExpr(cse.expr) <:>
+                Else <:>
+                handleOneCase(tail) <:>
+                End
+              case Nil =>
+                Unreachable
+            }
+          }
+
+          cgExpr(scrut) <:> SetLocal(scrutLocalPtr) <:>
+          handleOneCase(cases)
+
+        case _ =>
+          Unreachable
+
 
 
       }
+
+
+
     }
 
     Module(
