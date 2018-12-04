@@ -1,3 +1,10 @@
-object Main {
-  3+3
+object FirstTestWasm {
+  val x: Int =  3+3;
+  val y: Boolean = true;
+  Std.printInt(x);
+
+
+  val g: Boolean =true;
+  if(x < 8) {true} else {false}
+
 }
