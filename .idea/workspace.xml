@@ -2,24 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="465e3943-a80a-42f5-b6e1-d468bfe68eb9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/amyc/codegen/CodeGen.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/amyc/codegen/CodeGen.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/resources/lexer/failing/IntLitsTooBig.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/resources/lexer/failing/UnclosedComment.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/resources/lexer/failing/UnclosedStringLit.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/resources/lexer/outputs/Hello.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/resources/lexer/outputs/IntLits.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/resources/lexer/outputs/StringLit.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/resources/lexer/outputs/StringLitUnclosed" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/resources/lexer/outputs/UnclosedComment.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/resources/lexer/outputs/uCom.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/resources/lexer/passing/Hello.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/resources/lexer/passing/IntLits.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/resources/lexer/passing/StringLit.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/resources/lexer/passing/StringLitUnclosed.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/resources/lexer/passing/uCom.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/scala/amyc/test/LexerTests.scala" beforeDir="false" afterPath="$PROJECT_DIR$/test/scala/amyc/test/LexerTests.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test.iml" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -30,11 +13,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="600">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/amyc/codegen/CodeGen.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1115">
-              <caret line="244" column="10" selection-start-line="244" selection-start-column="10" selection-end-line="244" selection-end-column="10" />
+            <state relative-caret-position="419">
+              <caret line="52" column="64" selection-start-line="52" selection-start-column="64" selection-end-line="52" selection-end-column="64" />
               <folding>
                 <element signature="e#30#47#0" expanded="true" />
               </folding>
@@ -60,7 +43,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/examples/FirstTestWasm.scala">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="29">
@@ -158,8 +141,8 @@
         <option value="$PROJECT_DIR$/src/amyc/analyzer/TypeChecker.scala" />
         <option value="$PROJECT_DIR$/src/amyc/codegen/Utils.scala" />
         <option value="$PROJECT_DIR$/src/amyc/ast/TreeModule.scala" />
-        <option value="$PROJECT_DIR$/src/amyc/codegen/CodeGen.scala" />
         <option value="$PROJECT_DIR$/examples/FirstTestWasm.scala" />
+        <option value="$PROJECT_DIR$/src/amyc/codegen/CodeGen.scala" />
       </list>
     </option>
   </component>
@@ -247,7 +230,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1543856323346" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1543908720104" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
@@ -427,16 +410,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/amyc/codegen/CodeGen.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1115">
-          <caret line="244" column="10" selection-start-line="244" selection-start-column="10" selection-end-line="244" selection-end-column="10" />
-          <folding>
-            <element signature="e#30#47#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/examples/HelloInt.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -462,6 +435,16 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="29">
           <caret line="1" column="5" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/amyc/codegen/CodeGen.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="419">
+          <caret line="52" column="64" selection-start-line="52" selection-start-column="64" selection-end-line="52" selection-end-column="64" />
+          <folding>
+            <element signature="e#30#47#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

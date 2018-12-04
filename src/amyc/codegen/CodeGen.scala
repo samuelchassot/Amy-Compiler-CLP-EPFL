@@ -50,32 +50,41 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
     // their index in the wasm local variables, and a LocalsHandler which will generate
     // fresh local slots as required.
     def cgExpr(expr: Expr)(implicit locals: Map[Identifier, Int], lh: LocalsHandler): Code = {
-      def matchAndBind(p: Pattern): Code = {
+      def matchAndBind(p: Pattern): (Code, Map[Identifier, Int]) = {
         //assume v is on the stack, matchAndBind consumes it and push the boolean
         p match {
-          case WildcardPattern() => Const(1) //return true
+          case WildcardPattern() => (Const(1), Map.empty) //return true
           case IdPattern(id) =>
+            val newLocal = lh.getFreshLocal()
             //store v in the Local id
-            SetLocal(id) <:>
+            val code = SetLocal(newLocal) <:>
               //return true
               Const(1)
+
+            (code, Map.empty + ((id, newLocal)))
           case LiteralPattern(lit) =>
-            cgExpr(lit) <:>
+            val code = cgExpr(lit) <:>
               Eq
+            (code, Map.empty)
           case CaseClassPattern(constr, args) =>
             val constrSig = table.getConstructor(constr).get
             val vPtr = lh.getFreshLocal()
             val adtInMem = lh.getFreshLocal()
-            val mbargs = for(pat <- args) yield {
-              GetLocal(adtInMem) <:> Const(4) <:> Add <:> SetLocal(adtInMem) <:> GetLocal(adtInMem) <:> Load <:>
+            val mbargs = args.map(pat => {
+              val matchAndBindRes = matchAndBind(pat)
+              val code = GetLocal(adtInMem) <:> Const(4) <:> Add <:> SetLocal(adtInMem) <:> GetLocal(adtInMem) <:> Load <:>
                 //Now the pattern is loaded on the stack
-                matchAndBind(pat) <:>
+                matchAndBindRes._1 <:>
                 And
+              (code, matchAndBindRes._2)
 
-            }
+            })
+            val mbargsCode = mbargs.map(_._1)
+            val mbargsMap = mbargs.map(_._2).foldLeft(Map.empty[Identifier, Int])(_++_)
 
             //store v because will be needed
-            SetLocal(vPtr) <:>
+            val code =
+              SetLocal(vPtr) <:>
               GetLocal(vPtr) <:>
               Load <:>
               //Constructor's index is on the stack
@@ -86,13 +95,15 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
               GetLocal(vPtr) <:> SetLocal(adtInMem) <:>
               //load a true (base case like for foldLeft)
               Const(1) <:>
-              mbargs <:>
+              mbargsCode <:>
               Else <:>
               //Constructor doesn't match so return false
               Const(0) <:>
               End
+
+            (code, mbargsMap)
           case _ =>
-            Unreachable
+            (Unreachable, Map.empty)
         }
       }
       expr match {
@@ -226,10 +237,11 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
           def handleOneCase(lCases: List[MatchCase]): Code ={
             lCases match{
               case cse :: tail =>
+                val mabRes = matchAndBind(cse.pat)
                 GetLocal(scrutLocalPtr) <:>
-                matchAndBind(cse.pat) <:>
+                mabRes._1 <:>
                 If_i32 <:>
-                cgExpr(cse.expr) <:>
+                cgExpr(cse.expr)(mabRes._2, lh) <:>
                 Else <:>
                 handleOneCase(tail) <:>
                 End
