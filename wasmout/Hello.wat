@@ -98,8 +98,8 @@
 
   (func $Std_printBoolean (param i32) (result i32) 
     get_local 0
-    call $booleanToString_0
-    call $printString_0
+    call $Std_booleanToString
+    call $Std_printString
   )
 
   (func $Std_intToString (param i32) (result i32) (local i32 i32)
@@ -135,74 +135,8 @@
       i32.const 0
       get_local 0
       i32.sub
-      call $intToString_0
-      get_global 0
-      set_local 3
-      get_local 0
-      set_local 2
-      loop $label_1
-        get_local 2
-        i32.load8_u
-        if
-          get_local 3
-          get_local 2
-          i32.load8_u
-          i32.store8
-          get_local 3
-          i32.const 1
-          i32.add
-          set_local 3
-          get_local 2
-          i32.const 1
-          i32.add
-          set_local 2
-          br $label_1
-        else
-        end
-      end
-      get_local 1
-      set_local 2
-      loop $label_2
-        get_local 2
-        i32.load8_u
-        if
-          get_local 3
-          get_local 2
-          i32.load8_u
-          i32.store8
-          get_local 3
-          i32.const 1
-          i32.add
-          set_local 3
-          get_local 2
-          i32.const 1
-          i32.add
-          set_local 2
-          br $label_2
-        else
-        end
-      end
-      loop $label_0
-        get_local 3
-        i32.const 0
-        i32.store8
-        get_local 3
-        i32.const 4
-        i32.rem_s
-        if
-          get_local 3
-          i32.const 1
-          i32.add
-          set_local 3
-          br $label_0
-        else
-        end
-      end
-      get_global 0
-      get_local 3
-      i32.const 1
-      i32.add
-      set_global 0
+      call $Std_intToString
+      call $String_concat
     else
       get_local 0
       i32.const 10
@@ -217,79 +151,13 @@
       i32.eq
       if (result i32)
         get_local 1
-        call $digitToString_0
+        call $Std_digitToString
       else
         get_local 2
-        call $intToString_0
+        call $Std_intToString
         get_local 1
-        call $digitToString_0
-        get_global 0
-        set_local 3
-        get_local 0
-        set_local 2
-        loop $label_1
-          get_local 2
-          i32.load8_u
-          if
-            get_local 3
-            get_local 2
-            i32.load8_u
-            i32.store8
-            get_local 3
-            i32.const 1
-            i32.add
-            set_local 3
-            get_local 2
-            i32.const 1
-            i32.add
-            set_local 2
-            br $label_1
-          else
-          end
-        end
-        get_local 1
-        set_local 2
-        loop $label_2
-          get_local 2
-          i32.load8_u
-          if
-            get_local 3
-            get_local 2
-            i32.load8_u
-            i32.store8
-            get_local 3
-            i32.const 1
-            i32.add
-            set_local 3
-            get_local 2
-            i32.const 1
-            i32.add
-            set_local 2
-            br $label_2
-          else
-          end
-        end
-        loop $label_0
-          get_local 3
-          i32.const 0
-          i32.store8
-          get_local 3
-          i32.const 4
-          i32.rem_s
-          if
-            get_local 3
-            i32.const 1
-            i32.add
-            set_local 3
-            br $label_0
-          else
-          end
-        end
-        get_global 0
-        get_local 3
-        i32.const 1
-        i32.add
-        set_global 0
+        call $Std_digitToString
+        call $String_concat
       end
     end
   )
@@ -482,74 +350,8 @@
     i32.const 8
     i32.add
     set_global 0
-    get_global 0
-    set_local 3
-    get_local 0
-    set_local 2
-    loop $label_1
-      get_local 2
-      i32.load8_u
-      if
-        get_local 3
-        get_local 2
-        i32.load8_u
-        i32.store8
-        get_local 3
-        i32.const 1
-        i32.add
-        set_local 3
-        get_local 2
-        i32.const 1
-        i32.add
-        set_local 2
-        br $label_1
-      else
-      end
-    end
-    get_local 1
-    set_local 2
-    loop $label_2
-      get_local 2
-      i32.load8_u
-      if
-        get_local 3
-        get_local 2
-        i32.load8_u
-        i32.store8
-        get_local 3
-        i32.const 1
-        i32.add
-        set_local 3
-        get_local 2
-        i32.const 1
-        i32.add
-        set_local 2
-        br $label_2
-      else
-      end
-    end
-    loop $label_0
-      get_local 3
-      i32.const 0
-      i32.store8
-      get_local 3
-      i32.const 4
-      i32.rem_s
-      if
-        get_local 3
-        i32.const 1
-        i32.add
-        set_local 3
-        br $label_0
-      else
-      end
-    end
-    get_global 0
-    get_local 3
-    i32.const 1
-    i32.add
-    set_global 0
-    call $printString_0
+    call $String_concat
+    call $Std_printString
     drop
   )
 )

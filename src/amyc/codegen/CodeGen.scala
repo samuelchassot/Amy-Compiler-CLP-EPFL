@@ -53,7 +53,7 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
       def matchAndBind(p: Pattern): (Code, Map[Identifier, Int]) = {
         //assume v is on the stack, matchAndBind consumes it and push the boolean
         p match {
-          case WildcardPattern() => (Const(1), Map.empty) //return true
+          case WildcardPattern() => (Drop <:> Const(1), Map.empty) //return true
           case IdPattern(id) =>
             val newLocal = lh.getFreshLocal()
             //store v in the Local id
@@ -82,6 +82,7 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
             val mbargsCode = mbargs.map(_._1)
             val mbargsMap = mbargs.map(_._2).foldLeft(Map.empty[Identifier, Int])(_++_)
 
+
             //store v because will be needed
             val code =
               SetLocal(vPtr) <:>
@@ -100,7 +101,6 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
               //Constructor doesn't match so return false
               Const(0) <:>
               End
-
             (code, mbargsMap)
           case _ =>
             (Unreachable, Map.empty)
@@ -108,7 +108,7 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
       }
       expr match {
         //Literals
-        case Variable(name) => 
+        case Variable(name) =>
           GetLocal(locals.get(name).get)
         case IntLiteral(value) =>
           Const(value)
@@ -169,7 +169,7 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
         case Concat(lhs, rhs) =>
           cgExpr(lhs) <:>
           cgExpr(rhs) <:>
-          Utils.concatImpl.code
+          Call(concatImpl.name)
 
         //unary operator
         case Not(expr) =>
@@ -208,25 +208,26 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
         case AmyCall(qname, args) =>
           val optFun = table.getFunction(qname)
           if(optFun.isDefined){
+            val name = fullName(optFun.get.owner, qname);
             //Load args on the stack
             args.map(cgExpr(_)) <:>
             //call the function
-            Call(qname.fullName)
+            Call(name)
           }else{
             val constrSig = table.getConstructor(qname).get
             //we know it 's defined due to type- and name analysis
             val index = constrSig.index
 
             val incrementMemBound = Const(4) <:> GetGlobal(memoryBoundary) <:> Add <:> SetGlobal(memoryBoundary)
-
-            val storeArgs = for(arg <- args) yield {
-                cgExpr(arg) <:> SetGlobal(memoryBoundary) <:> incrementMemBound
+            val argsWithTypes = args.zip(constrSig.argTypes)
+            val storeArgs = for(arg <- argsWithTypes) yield {
+                GetGlobal(memoryBoundary) <:> incrementMemBound <:> cgExpr(arg._1) <:> Store
               }
 
             //return the old memoryBoundary (where index is stored) to the caller by putting it on the stack
             GetGlobal(memoryBoundary) <:>
             //store constructor's index
-            Const(index) <:> SetGlobal(memoryBoundary) <:>
+            GetGlobal(memoryBoundary) <:> Const(index) <:> Store <:>
             //increment memory pointer
             incrementMemBound <:>
             storeArgs
@@ -234,24 +235,31 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
 
         case Match(scrut, cases) =>
           val scrutLocalPtr = lh.getFreshLocal()
+          val matchLabel = getFreshLabel("match")
+          val returnExpr = lh.getFreshLocal()
           def handleOneCase(lCases: List[MatchCase]): Code ={
             lCases match{
               case cse :: tail =>
                 val mabRes = matchAndBind(cse.pat)
                 GetLocal(scrutLocalPtr) <:>
                 mabRes._1 <:>
-                If_i32 <:>
-                cgExpr(cse.expr)(mabRes._2, lh) <:>
+                If_void <:>
+                cgExpr(cse.expr)(locals ++ mabRes._2, lh) <:>
+                SetLocal(returnExpr) <:>
+                Br(matchLabel) <:>
                 Else <:>
                 handleOneCase(tail) <:>
                 End
               case Nil =>
-                Unreachable
+                mkString(s"Match error $matchLabel") <:> Call("Std_printString") <:> Unreachable
             }
           }
 
+          Block(matchLabel) <:>
           cgExpr(scrut) <:> SetLocal(scrutLocalPtr) <:>
-          handleOneCase(cases)
+          handleOneCase(cases) <:>
+          End <:>
+          GetLocal(returnExpr)
 
         case _ =>
           Unreachable

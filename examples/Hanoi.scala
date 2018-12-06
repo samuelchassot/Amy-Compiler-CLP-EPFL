@@ -12,5 +12,5 @@ object Hanoi {
     }
   }
 
-  Std.printString("Hanoi for 4 plates: " ++ Std.intToString(solve(4)))
+  //Std.printString("Hanoi for 4 plates: " ++ Std.intToString(solve(4)))
 }
