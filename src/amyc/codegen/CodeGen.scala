@@ -219,15 +219,18 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
             val index = constrSig.index
 
             val incrementMemBound = Const(4) <:> GetGlobal(memoryBoundary) <:> Add <:> SetGlobal(memoryBoundary)
-            val argsWithTypes = args.zip(constrSig.argTypes)
-            val storeArgs = for(arg <- argsWithTypes) yield {
-                GetGlobal(memoryBoundary) <:> incrementMemBound <:> cgExpr(arg._1) <:> Store
+            val storeArgs = for(arg <- args) yield {
+                GetGlobal(memoryBoundary) <:> incrementMemBound <:> cgExpr(arg) <:> Store
               }
 
             //return the old memoryBoundary (where index is stored) to the caller by putting it on the stack
             GetGlobal(memoryBoundary) <:>
             //store constructor's index
             GetGlobal(memoryBoundary) <:> Const(index) <:> Store <:>
+            //DEBUG
+//            mkString(s"constructor ${constrSig.parent.name} with index ${constrSig.index} stored at address : ") <:> Call("Std_printString") <:> Drop <:>
+//            GetGlobal(memoryBoundary) <:> Call("Std_printInt") <:> Drop <:>
+            //END DEBUG
             //increment memory pointer
             incrementMemBound <:>
             storeArgs

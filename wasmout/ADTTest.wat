@@ -441,11 +441,51 @@
           get_global 0
           i32.const 11
           i32.add
+          i32.const 32
+          i32.store8
+          get_global 0
+          i32.const 12
+          i32.add
+          i32.const 109
+          i32.store8
+          get_global 0
+          i32.const 13
+          i32.add
+          i32.const 97
+          i32.store8
+          get_global 0
+          i32.const 14
+          i32.add
+          i32.const 116
+          i32.store8
+          get_global 0
+          i32.const 15
+          i32.add
+          i32.const 99
+          i32.store8
+          get_global 0
+          i32.const 16
+          i32.add
+          i32.const 104
+          i32.store8
+          get_global 0
+          i32.const 17
+          i32.add
+          i32.const 95
+          i32.store8
+          get_global 0
+          i32.const 18
+          i32.add
+          i32.const 48
+          i32.store8
+          get_global 0
+          i32.const 19
+          i32.add
           i32.const 0
           i32.store8
           get_global 0
           get_global 0
-          i32.const 12
+          i32.const 20
           i32.add
           set_global 0
           call $Std_printString
@@ -678,11 +718,51 @@
           get_global 0
           i32.const 11
           i32.add
+          i32.const 32
+          i32.store8
+          get_global 0
+          i32.const 12
+          i32.add
+          i32.const 109
+          i32.store8
+          get_global 0
+          i32.const 13
+          i32.add
+          i32.const 97
+          i32.store8
+          get_global 0
+          i32.const 14
+          i32.add
+          i32.const 116
+          i32.store8
+          get_global 0
+          i32.const 15
+          i32.add
+          i32.const 99
+          i32.store8
+          get_global 0
+          i32.const 16
+          i32.add
+          i32.const 104
+          i32.store8
+          get_global 0
+          i32.const 17
+          i32.add
+          i32.const 95
+          i32.store8
+          get_global 0
+          i32.const 18
+          i32.add
+          i32.const 49
+          i32.store8
+          get_global 0
+          i32.const 19
+          i32.add
           i32.const 0
           i32.store8
           get_global 0
           get_global 0
-          i32.const 12
+          i32.const 20
           i32.add
           set_global 0
           call $Std_printString
@@ -757,6 +837,133 @@
         i32.const 0
       end
       if
+        get_global 0
+        i32.const 0
+        i32.add
+        i32.const 105
+        i32.store8
+        get_global 0
+        i32.const 1
+        i32.add
+        i32.const 110
+        i32.store8
+        get_global 0
+        i32.const 2
+        i32.add
+        i32.const 32
+        i32.store8
+        get_global 0
+        i32.const 3
+        i32.add
+        i32.const 102
+        i32.store8
+        get_global 0
+        i32.const 4
+        i32.add
+        i32.const 105
+        i32.store8
+        get_global 0
+        i32.const 5
+        i32.add
+        i32.const 114
+        i32.store8
+        get_global 0
+        i32.const 6
+        i32.add
+        i32.const 115
+        i32.store8
+        get_global 0
+        i32.const 7
+        i32.add
+        i32.const 116
+        i32.store8
+        get_global 0
+        i32.const 8
+        i32.add
+        i32.const 32
+        i32.store8
+        get_global 0
+        i32.const 9
+        i32.add
+        i32.const 99
+        i32.store8
+        get_global 0
+        i32.const 10
+        i32.add
+        i32.const 97
+        i32.store8
+        get_global 0
+        i32.const 11
+        i32.add
+        i32.const 115
+        i32.store8
+        get_global 0
+        i32.const 12
+        i32.add
+        i32.const 101
+        i32.store8
+        get_global 0
+        i32.const 13
+        i32.add
+        i32.const 32
+        i32.store8
+        get_global 0
+        i32.const 14
+        i32.add
+        i32.const 105
+        i32.store8
+        get_global 0
+        i32.const 15
+        i32.add
+        i32.const 110
+        i32.store8
+        get_global 0
+        i32.const 16
+        i32.add
+        i32.const 32
+        i32.store8
+        get_global 0
+        i32.const 17
+        i32.add
+        i32.const 115
+        i32.store8
+        get_global 0
+        i32.const 18
+        i32.add
+        i32.const 112
+        i32.store8
+        get_global 0
+        i32.const 19
+        i32.add
+        i32.const 108
+        i32.store8
+        get_global 0
+        i32.const 20
+        i32.add
+        i32.const 105
+        i32.store8
+        get_global 0
+        i32.const 21
+        i32.add
+        i32.const 116
+        i32.store8
+        get_global 0
+        i32.const 22
+        i32.add
+        i32.const 0
+        i32.store8
+        get_global 0
+        i32.const 23
+        i32.add
+        i32.const 0
+        i32.store8
+        get_global 0
+        get_global 0
+        i32.const 24
+        i32.add
+        set_global 0
+        call $Std_printString
+        drop
         get_local 9
         call $ADTTest_split
         set_local 10
@@ -920,11 +1127,51 @@
             get_global 0
             i32.const 11
             i32.add
+            i32.const 32
+            i32.store8
+            get_global 0
+            i32.const 12
+            i32.add
+            i32.const 109
+            i32.store8
+            get_global 0
+            i32.const 13
+            i32.add
+            i32.const 97
+            i32.store8
+            get_global 0
+            i32.const 14
+            i32.add
+            i32.const 116
+            i32.store8
+            get_global 0
+            i32.const 15
+            i32.add
+            i32.const 99
+            i32.store8
+            get_global 0
+            i32.const 16
+            i32.add
+            i32.const 104
+            i32.store8
+            get_global 0
+            i32.const 17
+            i32.add
+            i32.const 95
+            i32.store8
+            get_global 0
+            i32.const 18
+            i32.add
+            i32.const 51
+            i32.store8
+            get_global 0
+            i32.const 19
+            i32.add
             i32.const 0
             i32.store8
             get_global 0
             get_global 0
-            i32.const 12
+            i32.const 20
             i32.add
             set_global 0
             call $Std_printString
@@ -1029,11 +1276,51 @@
           get_global 0
           i32.const 11
           i32.add
+          i32.const 32
+          i32.store8
+          get_global 0
+          i32.const 12
+          i32.add
+          i32.const 109
+          i32.store8
+          get_global 0
+          i32.const 13
+          i32.add
+          i32.const 97
+          i32.store8
+          get_global 0
+          i32.const 14
+          i32.add
+          i32.const 116
+          i32.store8
+          get_global 0
+          i32.const 15
+          i32.add
+          i32.const 99
+          i32.store8
+          get_global 0
+          i32.const 16
+          i32.add
+          i32.const 104
+          i32.store8
+          get_global 0
+          i32.const 17
+          i32.add
+          i32.const 95
+          i32.store8
+          get_global 0
+          i32.const 18
+          i32.add
+          i32.const 50
+          i32.store8
+          get_global 0
+          i32.const 19
+          i32.add
           i32.const 0
           i32.store8
           get_global 0
           get_global 0
-          i32.const 12
+          i32.const 20
           i32.add
           set_global 0
           call $Std_printString
@@ -1095,6 +1382,11 @@
     set_global 0
     i32.store
     i32.store
+  )
+
+  (func $ADTTest_bar (result i32) 
+    call $ADTTest_foo
+    call $ADTTest_split
   )
   (export "ADTTest_main" (func $ADTTest_main))
   (func $ADTTest_main 

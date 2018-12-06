@@ -27,6 +27,7 @@ object MatchTest {
 
 val y: Int = c match{
   case Nil() => 100000
+  case _ => 42
   case Concat(_, d) => head(d)
   case listVal => head(listVal)
 };

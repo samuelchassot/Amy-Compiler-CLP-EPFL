@@ -23,6 +23,7 @@ object ADTTest{
   def split(l: List): LPair = {
     l match {
       case Cons(h1, Cons(h2, t)) =>
+        Std.printString("in first case in split");
         val rec: LPair = split(t);
         rec match {
           case LP(rec1, rec2) =>
@@ -34,6 +35,8 @@ object ADTTest{
   }
 
   def foo(): List = { Cons(5, Cons(42, Nil())) }
+
+  def bar(): LPair = { split(foo()) }
 
 //  val l: List = Cons(3, Cons(4, Cons(5, Nil())));
 //  Std.printInt(head(l));
@@ -53,4 +56,10 @@ object ADTTest{
 //  Std.printInt(h)
 
   foo()
+//  match {
+//    case Cons(h1, Cons(h2, t)) => Std.printInt(h1)
+//  }
+//  match {
+//    case LP(h, j) => Std.printInt(head(j))
+//  }
 }

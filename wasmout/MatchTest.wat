@@ -456,7 +456,7 @@
     get_local 2
   )
   (export "MatchTest_main" (func $MatchTest_main))
-  (func $MatchTest_main (local i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32)
+  (func $MatchTest_main (local i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32)
     get_global 0
     get_global 0
     i32.const 1
@@ -562,158 +562,167 @@
         br $match_1
       else
         get_local 4
-        set_local 8
-        get_local 8
-        i32.load
-        i32.const 2
-        i32.eq
-        if (result i32)
-          get_local 8
-          set_local 9
-          i32.const 1
-          get_local 9
-          i32.const 4
-          i32.add
-          set_local 9
-          get_local 9
-          i32.load
-          set_local 10
-          i32.const 1
-          i32.and
-          get_local 9
-          i32.const 4
-          i32.add
-          set_local 9
-          get_local 9
-          i32.load
-          set_local 11
-          i32.const 1
-          i32.and
-        else
-          i32.const 0
-        end
+        drop
+        i32.const 1
         if
-          get_local 11
-          call $MatchTest_head
+          i32.const 42
           set_local 5
           br $match_1
         else
           get_local 4
-          set_local 12
-          i32.const 1
+          set_local 8
+          get_local 8
+          i32.load
+          i32.const 2
+          i32.eq
+          if (result i32)
+            get_local 8
+            set_local 9
+            i32.const 1
+            get_local 9
+            i32.const 4
+            i32.add
+            set_local 9
+            get_local 9
+            i32.load
+            drop
+            i32.const 1
+            i32.and
+            get_local 9
+            i32.const 4
+            i32.add
+            set_local 9
+            get_local 9
+            i32.load
+            set_local 10
+            i32.const 1
+            i32.and
+          else
+            i32.const 0
+          end
           if
-            get_local 12
+            get_local 10
             call $MatchTest_head
             set_local 5
             br $match_1
           else
-            get_global 0
-            i32.const 0
-            i32.add
-            i32.const 77
-            i32.store8
-            get_global 0
+            get_local 4
+            set_local 11
             i32.const 1
-            i32.add
-            i32.const 97
-            i32.store8
-            get_global 0
-            i32.const 2
-            i32.add
-            i32.const 116
-            i32.store8
-            get_global 0
-            i32.const 3
-            i32.add
-            i32.const 99
-            i32.store8
-            get_global 0
-            i32.const 4
-            i32.add
-            i32.const 104
-            i32.store8
-            get_global 0
-            i32.const 5
-            i32.add
-            i32.const 32
-            i32.store8
-            get_global 0
-            i32.const 6
-            i32.add
-            i32.const 101
-            i32.store8
-            get_global 0
-            i32.const 7
-            i32.add
-            i32.const 114
-            i32.store8
-            get_global 0
-            i32.const 8
-            i32.add
-            i32.const 114
-            i32.store8
-            get_global 0
-            i32.const 9
-            i32.add
-            i32.const 111
-            i32.store8
-            get_global 0
-            i32.const 10
-            i32.add
-            i32.const 114
-            i32.store8
-            get_global 0
-            i32.const 11
-            i32.add
-            i32.const 32
-            i32.store8
-            get_global 0
-            i32.const 12
-            i32.add
-            i32.const 109
-            i32.store8
-            get_global 0
-            i32.const 13
-            i32.add
-            i32.const 97
-            i32.store8
-            get_global 0
-            i32.const 14
-            i32.add
-            i32.const 116
-            i32.store8
-            get_global 0
-            i32.const 15
-            i32.add
-            i32.const 99
-            i32.store8
-            get_global 0
-            i32.const 16
-            i32.add
-            i32.const 104
-            i32.store8
-            get_global 0
-            i32.const 17
-            i32.add
-            i32.const 95
-            i32.store8
-            get_global 0
-            i32.const 18
-            i32.add
-            i32.const 49
-            i32.store8
-            get_global 0
-            i32.const 19
-            i32.add
-            i32.const 0
-            i32.store8
-            get_global 0
-            get_global 0
-            i32.const 20
-            i32.add
-            set_global 0
-            call $Std_printString
-            unreachable
+            if
+              get_local 11
+              call $MatchTest_head
+              set_local 5
+              br $match_1
+            else
+              get_global 0
+              i32.const 0
+              i32.add
+              i32.const 77
+              i32.store8
+              get_global 0
+              i32.const 1
+              i32.add
+              i32.const 97
+              i32.store8
+              get_global 0
+              i32.const 2
+              i32.add
+              i32.const 116
+              i32.store8
+              get_global 0
+              i32.const 3
+              i32.add
+              i32.const 99
+              i32.store8
+              get_global 0
+              i32.const 4
+              i32.add
+              i32.const 104
+              i32.store8
+              get_global 0
+              i32.const 5
+              i32.add
+              i32.const 32
+              i32.store8
+              get_global 0
+              i32.const 6
+              i32.add
+              i32.const 101
+              i32.store8
+              get_global 0
+              i32.const 7
+              i32.add
+              i32.const 114
+              i32.store8
+              get_global 0
+              i32.const 8
+              i32.add
+              i32.const 114
+              i32.store8
+              get_global 0
+              i32.const 9
+              i32.add
+              i32.const 111
+              i32.store8
+              get_global 0
+              i32.const 10
+              i32.add
+              i32.const 114
+              i32.store8
+              get_global 0
+              i32.const 11
+              i32.add
+              i32.const 32
+              i32.store8
+              get_global 0
+              i32.const 12
+              i32.add
+              i32.const 109
+              i32.store8
+              get_global 0
+              i32.const 13
+              i32.add
+              i32.const 97
+              i32.store8
+              get_global 0
+              i32.const 14
+              i32.add
+              i32.const 116
+              i32.store8
+              get_global 0
+              i32.const 15
+              i32.add
+              i32.const 99
+              i32.store8
+              get_global 0
+              i32.const 16
+              i32.add
+              i32.const 104
+              i32.store8
+              get_global 0
+              i32.const 17
+              i32.add
+              i32.const 95
+              i32.store8
+              get_global 0
+              i32.const 18
+              i32.add
+              i32.const 49
+              i32.store8
+              get_global 0
+              i32.const 19
+              i32.add
+              i32.const 0
+              i32.store8
+              get_global 0
+              get_global 0
+              i32.const 20
+              i32.add
+              set_global 0
+              call $Std_printString
+              unreachable
+            end
           end
         end
       end
