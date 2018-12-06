@@ -69,10 +69,10 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
           case CaseClassPattern(constr, args) =>
             val constrSig = table.getConstructor(constr).get
             val vPtr = lh.getFreshLocal()
-            val adtInMem = lh.getFreshLocal()
-            val mbargs = args.map(pat => {
-              val matchAndBindRes = matchAndBind(pat)
-              val code = GetLocal(adtInMem) <:> Const(4) <:> Add <:> SetLocal(adtInMem) <:> GetLocal(adtInMem) <:> Load <:>
+            val argsWithIndex = args.zip(1 to args.size)
+            val mbargs = argsWithIndex.map(elem => {
+              val matchAndBindRes = matchAndBind(elem._1)
+              val code = GetLocal(vPtr) <:> Const(4*elem._2) <:> Add <:> Load <:>
                 //Now the pattern is loaded on the stack
                 matchAndBindRes._1 <:>
                 And
@@ -93,7 +93,6 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
               Eq <:>
               If_i32 <:>
               //matchAndBind every arguments
-              GetLocal(vPtr) <:> SetLocal(adtInMem) <:>
               //load a true (base case like for foldLeft)
               Const(1) <:>
               mbargsCode <:>
@@ -217,22 +216,20 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
             val constrSig = table.getConstructor(qname).get
             //we know it 's defined due to type- and name analysis
             val index = constrSig.index
-
-            val incrementMemBound = Const(4) <:> GetGlobal(memoryBoundary) <:> Add <:> SetGlobal(memoryBoundary)
+            val localPointer = lh.getFreshLocal()
+            val adtSize = 4*(1+constrSig.argTypes.size)
+            val incrementLocalPointer = Const(4) <:> GetLocal(localPointer) <:> Add <:> SetLocal(localPointer)
             val storeArgs = for(arg <- args) yield {
-                GetGlobal(memoryBoundary) <:> incrementMemBound <:> cgExpr(arg) <:> Store
+                GetLocal(localPointer) <:> cgExpr(arg) <:> Store <:> incrementLocalPointer
               }
 
             //return the old memoryBoundary (where index is stored) to the caller by putting it on the stack
             GetGlobal(memoryBoundary) <:>
+            GetGlobal(memoryBoundary) <:> SetLocal(localPointer) <:>
+            GetGlobal(memoryBoundary) <:> Const(adtSize) <:> Add <:> SetGlobal(memoryBoundary) <:>
             //store constructor's index
-            GetGlobal(memoryBoundary) <:> Const(index) <:> Store <:>
-            //DEBUG
-//            mkString(s"constructor ${constrSig.parent.name} with index ${constrSig.index} stored at address : ") <:> Call("Std_printString") <:> Drop <:>
-//            GetGlobal(memoryBoundary) <:> Call("Std_printInt") <:> Drop <:>
-            //END DEBUG
-            //increment memory pointer
-            incrementMemBound <:>
+            GetLocal(localPointer) <:> Const(index) <:> Store <:>
+            incrementLocalPointer <:>
             storeArgs
           }
 
