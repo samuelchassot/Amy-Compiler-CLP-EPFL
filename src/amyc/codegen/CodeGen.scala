@@ -72,7 +72,7 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
             val argsWithIndex = args.zip(1 to args.size)
             val mbargs = argsWithIndex.map(elem => {
               val matchAndBindRes = matchAndBind(elem._1)
-              val code = GetLocal(vPtr) <:> Const(4*elem._2) <:> Add <:> Load <:>
+              val code = GetLocal(vPtr) <:> Const(4 * elem._2) <:> Add <:> Load <:>
                 //Now the pattern is loaded on the stack
                 matchAndBindRes._1 <:>
                 And
@@ -80,31 +80,32 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
 
             })
             val mbargsCode = mbargs.map(_._1)
-            val mbargsMap = mbargs.map(_._2).foldLeft(Map.empty[Identifier, Int])(_++_)
+            val mbargsMap = mbargs.map(_._2).foldLeft(Map.empty[Identifier, Int])(_ ++ _)
 
 
             //store v because will be needed
             val code =
               SetLocal(vPtr) <:>
-              GetLocal(vPtr) <:>
-              Load <:>
-              //Constructor's index is on the stack
-              Const(constrSig.index) <:>
-              Eq <:>
-              If_i32 <:>
-              //matchAndBind every arguments
-              //load a true (base case like for foldLeft)
-              Const(1) <:>
-              mbargsCode <:>
-              Else <:>
-              //Constructor doesn't match so return false
-              Const(0) <:>
-              End
+                GetLocal(vPtr) <:>
+                Load <:>
+                //Constructor's index is on the stack
+                Const(constrSig.index) <:>
+                Eq <:>
+                If_i32 <:>
+                //matchAndBind every arguments
+                //load a true (base case like for foldLeft)
+                Const(1) <:>
+                mbargsCode <:>
+                Else <:>
+                //Constructor doesn't match so return false
+                Const(0) <:>
+                End
             (code, mbargsMap)
           case _ =>
             (Unreachable, Map.empty)
         }
       }
+
       expr match {
         //Literals
         case Variable(name) =>
@@ -121,155 +122,149 @@ object CodeGen extends Pipeline[(Program, SymbolTable), Module] {
         //Binary operations
         case Plus(lhs, rhs) =>
           cgExpr(lhs) <:>
-          cgExpr(rhs) <:>
-          Add
+            cgExpr(rhs) <:>
+            Add
         case Minus(lhs, rhs) =>
           cgExpr(lhs) <:>
-          cgExpr(rhs) <:>
-          Sub
+            cgExpr(rhs) <:>
+            Sub
         case Times(lhs, rhs) =>
           cgExpr(lhs) <:>
-          cgExpr(rhs) <:>
-          Mul
+            cgExpr(rhs) <:>
+            Mul
         case AmyDiv(lhs, rhs) =>
           cgExpr(lhs) <:>
-          cgExpr(rhs) <:>
-          Div
+            cgExpr(rhs) <:>
+            Div
         case Mod(lhs, rhs) =>
           cgExpr(lhs) <:>
-          cgExpr(rhs) <:>
-          Rem
+            cgExpr(rhs) <:>
+            Rem
         case LessThan(lhs, rhs) =>
           cgExpr(lhs) <:>
-          cgExpr(rhs) <:>
-          Lt_s
+            cgExpr(rhs) <:>
+            Lt_s
         case LessEquals(lhs, rhs) =>
           cgExpr(lhs) <:>
-          cgExpr(rhs) <:>
-          Le_s
+            cgExpr(rhs) <:>
+            Le_s
         case AmyAnd(lhs, rhs) =>
           cgExpr(lhs) <:>
-          If_i32 <:>
-          cgExpr(rhs) <:>
-          Else <:>
-          Const(0) <:>
-          End
+            If_i32 <:>
+            cgExpr(rhs) <:>
+            Else <:>
+            Const(0) <:>
+            End
         case AmyOr(lhs, rhs) =>
           cgExpr(lhs) <:>
-          If_i32 <:>
-          Const(1) <:>
-          Else <:>
-          cgExpr(rhs) <:>
-          End
+            If_i32 <:>
+            Const(1) <:>
+            Else <:>
+            cgExpr(rhs) <:>
+            End
         case Equals(lhs, rhs) =>
           cgExpr(lhs) <:>
-          cgExpr(rhs) <:>
-          Eq
+            cgExpr(rhs) <:>
+            Eq
         case Concat(lhs, rhs) =>
           cgExpr(lhs) <:>
-          cgExpr(rhs) <:>
-          Call(concatImpl.name)
+            cgExpr(rhs) <:>
+            Call(concatImpl.name)
 
         //unary operator
         case Not(expr) =>
           cgExpr(expr) <:>
-          Eqz
+            Eqz
         case Neg(expr) =>
           Const(0) <:>
-          cgExpr(expr) <:>
-          Sub
+            cgExpr(expr) <:>
+            Sub
 
         case Ite(cond, thenn, elze) =>
           cgExpr(cond) <:>
-          If_i32 <:>
-          cgExpr(thenn) <:>
-          Else <:>
-          cgExpr(elze) <:>
-          End
+            If_i32 <:>
+            cgExpr(thenn) <:>
+            Else <:>
+            cgExpr(elze) <:>
+            End
 
         case Let(df, value, body) =>
           val id = lh.getFreshLocal()
           cgExpr(value) <:>
-          SetLocal(id) <:>
-          cgExpr(body)(locals + ((df.name, id)), lh)
+            SetLocal(id) <:>
+            cgExpr(body)(locals + ((df.name, id)), lh)
 
         case Sequence(expr1, expr2) =>
           cgExpr(expr1) <:>
-          Drop <:>
-          cgExpr(expr2)
+            Drop <:>
+            cgExpr(expr2)
 
         case Error(msg) =>
           cgExpr(msg) <:>
-          Call("Std_printString") <:>
-          Unreachable
-
+            Call("Std_printString") <:>
+            Unreachable
 
         case AmyCall(qname, args) =>
           val optFun = table.getFunction(qname)
-          if(optFun.isDefined){
+          if (optFun.isDefined) {
             val name = fullName(optFun.get.owner, qname);
             //Load args on the stack
             args.map(cgExpr(_)) <:>
-            //call the function
-            Call(name)
-          }else{
+              //call the function
+              Call(name)
+          } else {
             val constrSig = table.getConstructor(qname).get
             //we know it 's defined due to type- and name analysis
             val index = constrSig.index
             val localPointer = lh.getFreshLocal()
-            val adtSize = 4*(1+constrSig.argTypes.size)
+            val adtSize = 4 * (1 + constrSig.argTypes.size)
             val incrementLocalPointer = Const(4) <:> GetLocal(localPointer) <:> Add <:> SetLocal(localPointer)
-            val storeArgs = for(arg <- args) yield {
-                GetLocal(localPointer) <:> cgExpr(arg) <:> Store <:> incrementLocalPointer
-              }
+            val storeArgs = for (arg <- args) yield {
+              GetLocal(localPointer) <:> cgExpr(arg) <:> Store <:> incrementLocalPointer
+            }
 
             //return the old memoryBoundary (where index is stored) to the caller by putting it on the stack
             GetGlobal(memoryBoundary) <:>
-            GetGlobal(memoryBoundary) <:> SetLocal(localPointer) <:>
-            GetGlobal(memoryBoundary) <:> Const(adtSize) <:> Add <:> SetGlobal(memoryBoundary) <:>
-            //store constructor's index
-            GetLocal(localPointer) <:> Const(index) <:> Store <:>
-            incrementLocalPointer <:>
-            storeArgs
+              GetGlobal(memoryBoundary) <:> SetLocal(localPointer) <:>
+              GetGlobal(memoryBoundary) <:> Const(adtSize) <:> Add <:> SetGlobal(memoryBoundary) <:>
+              //store constructor's index
+              GetLocal(localPointer) <:> Const(index) <:> Store <:>
+              incrementLocalPointer <:>
+              storeArgs
           }
 
         case Match(scrut, cases) =>
           val scrutLocalPtr = lh.getFreshLocal()
           val matchLabel = getFreshLabel("match")
           val returnExpr = lh.getFreshLocal()
-          def handleOneCase(lCases: List[MatchCase]): Code ={
-            lCases match{
+
+          def handleOneCase(lCases: List[MatchCase]): Code = {
+            lCases match {
               case cse :: tail =>
                 val mabRes = matchAndBind(cse.pat)
                 GetLocal(scrutLocalPtr) <:>
-                mabRes._1 <:>
-                If_void <:>
-                cgExpr(cse.expr)(locals ++ mabRes._2, lh) <:>
-                SetLocal(returnExpr) <:>
-                Br(matchLabel) <:>
-                Else <:>
-                handleOneCase(tail) <:>
-                End
+                  mabRes._1 <:>
+                  If_void <:>
+                  cgExpr(cse.expr)(locals ++ mabRes._2, lh) <:>
+                  SetLocal(returnExpr) <:>
+                  Br(matchLabel) <:>
+                  Else <:>
+                  handleOneCase(tail) <:>
+                  End
               case Nil =>
                 mkString(s"Match error $matchLabel") <:> Call("Std_printString") <:> Unreachable
             }
           }
 
           Block(matchLabel) <:>
-          cgExpr(scrut) <:> SetLocal(scrutLocalPtr) <:>
-          handleOneCase(cases) <:>
-          End <:>
-          GetLocal(returnExpr)
+            cgExpr(scrut) <:> SetLocal(scrutLocalPtr) <:>
+            handleOneCase(cases) <:>
+            End <:>
+            GetLocal(returnExpr)
 
         case _ =>
           Unreachable
-
-
-
       }
-
-
-
     }
 
     Module(

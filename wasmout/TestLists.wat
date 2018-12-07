@@ -828,6 +828,10 @@
         get_global 0
         get_global 0
         set_local 5
+        get_global 0
+        i32.const 8
+        i32.add
+        set_global 0
         get_local 5
         i32.const 1
         i32.store
@@ -860,6 +864,10 @@
           get_global 0
           get_global 0
           set_local 7
+          get_global 0
+          i32.const 4
+          i32.add
+          set_global 0
           get_local 7
           i32.const 0
           i32.store
@@ -988,6 +996,10 @@
     get_global 0
     get_global 0
     set_local 1
+    get_global 0
+    i32.const 4
+    i32.add
+    set_global 0
     get_local 1
     i32.const 0
     i32.store
@@ -1048,6 +1060,10 @@
           get_global 0
           get_global 0
           set_local 8
+          get_global 0
+          i32.const 12
+          i32.add
+          set_global 0
           get_local 8
           i32.const 1
           i32.store
@@ -1381,6 +1397,10 @@
       get_global 0
       get_global 0
       set_local 2
+      get_global 0
+      i32.const 4
+      i32.add
+      set_global 0
       get_local 2
       i32.const 0
       i32.store
@@ -1392,6 +1412,10 @@
       get_global 0
       get_global 0
       set_local 3
+      get_global 0
+      i32.const 12
+      i32.add
+      set_global 0
       get_local 3
       i32.const 1
       i32.store
@@ -1635,6 +1659,10 @@
           get_global 0
           get_global 0
           set_local 8
+          get_global 0
+          i32.const 12
+          i32.add
+          set_global 0
           get_local 8
           i32.const 1
           i32.store
@@ -2044,6 +2072,10 @@
                   get_global 0
                   get_global 0
                   set_local 14
+                  get_global 0
+                  i32.const 12
+                  i32.add
+                  set_global 0
                   get_local 14
                   i32.const 1
                   i32.store
@@ -2071,6 +2103,10 @@
                   get_global 0
                   get_global 0
                   set_local 15
+                  get_global 0
+                  i32.const 12
+                  i32.add
+                  set_global 0
                   get_local 15
                   i32.const 1
                   i32.store
@@ -2432,6 +2468,10 @@
             get_global 0
             get_global 0
             set_local 14
+            get_global 0
+            i32.const 12
+            i32.add
+            set_global 0
             get_local 14
             i32.const 0
             i32.store
@@ -2443,6 +2483,10 @@
             get_global 0
             get_global 0
             set_local 15
+            get_global 0
+            i32.const 12
+            i32.add
+            set_global 0
             get_local 15
             i32.const 1
             i32.store
@@ -2473,6 +2517,10 @@
             get_global 0
             get_global 0
             set_local 16
+            get_global 0
+            i32.const 12
+            i32.add
+            set_global 0
             get_local 16
             i32.const 1
             i32.store
@@ -2642,6 +2690,10 @@
           get_global 0
           get_global 0
           set_local 17
+          get_global 0
+          i32.const 12
+          i32.add
+          set_global 0
           get_local 17
           i32.const 0
           i32.store
@@ -2660,6 +2712,10 @@
           get_global 0
           get_global 0
           set_local 18
+          get_global 0
+          i32.const 4
+          i32.add
+          set_global 0
           get_local 18
           i32.const 0
           i32.store
@@ -3697,6 +3753,10 @@
       get_global 0
       get_global 0
       set_local 2
+      get_global 0
+      i32.const 4
+      i32.add
+      set_global 0
       get_local 2
       i32.const 0
       i32.store
@@ -3723,6 +3783,10 @@
           get_global 0
           get_global 0
           set_local 6
+          get_global 0
+          i32.const 4
+          i32.add
+          set_global 0
           get_local 6
           i32.const 0
           i32.store
@@ -3762,6 +3826,10 @@
             get_global 0
             get_global 0
             set_local 10
+            get_global 0
+            i32.const 12
+            i32.add
+            set_global 0
             get_local 10
             i32.const 1
             i32.store
@@ -4705,6 +4773,10 @@
         get_global 0
         get_global 0
         set_local 5
+        get_global 0
+        i32.const 12
+        i32.add
+        set_global 0
         get_local 5
         i32.const 1
         i32.store
@@ -4723,6 +4795,10 @@
         get_global 0
         get_global 0
         set_local 6
+        get_global 0
+        i32.const 4
+        i32.add
+        set_global 0
         get_local 6
         i32.const 0
         i32.store
@@ -4753,6 +4829,10 @@
           get_global 0
           get_global 0
           set_local 8
+          get_global 0
+          i32.const 4
+          i32.add
+          set_global 0
           get_local 8
           i32.const 0
           i32.store
@@ -4900,6 +4980,10 @@
     get_global 0
     get_global 0
     set_local 1
+    get_global 0
+    i32.const 12
+    i32.add
+    set_global 0
     get_local 1
     i32.const 1
     i32.store
@@ -4918,6 +5002,10 @@
     get_global 0
     get_global 0
     set_local 2
+    get_global 0
+    i32.const 12
+    i32.add
+    set_global 0
     get_local 2
     i32.const 1
     i32.store
@@ -4938,6 +5026,10 @@
     get_global 0
     get_global 0
     set_local 3
+    get_global 0
+    i32.const 12
+    i32.add
+    set_global 0
     get_local 3
     i32.const 1
     i32.store
@@ -4958,6 +5050,10 @@
     get_global 0
     get_global 0
     set_local 4
+    get_global 0
+    i32.const 12
+    i32.add
+    set_global 0
     get_local 4
     i32.const 1
     i32.store
@@ -4976,6 +5072,10 @@
     get_global 0
     get_global 0
     set_local 5
+    get_global 0
+    i32.const 12
+    i32.add
+    set_global 0
     get_local 5
     i32.const 1
     i32.store
@@ -4994,6 +5094,10 @@
     get_global 0
     get_global 0
     set_local 6
+    get_global 0
+    i32.const 4
+    i32.add
+    set_global 0
     get_local 6
     i32.const 0
     i32.store
@@ -5030,6 +5134,10 @@
     get_global 0
     get_global 0
     set_local 7
+    get_global 0
+    i32.const 12
+    i32.add
+    set_global 0
     get_local 7
     i32.const 1
     i32.store
@@ -5048,6 +5156,10 @@
     get_global 0
     get_global 0
     set_local 8
+    get_global 0
+    i32.const 12
+    i32.add
+    set_global 0
     get_local 8
     i32.const 1
     i32.store
@@ -5066,6 +5178,10 @@
     get_global 0
     get_global 0
     set_local 9
+    get_global 0
+    i32.const 4
+    i32.add
+    set_global 0
     get_local 9
     i32.const 0
     i32.store
@@ -5086,6 +5202,10 @@
     get_global 0
     get_global 0
     set_local 10
+    get_global 0
+    i32.const 12
+    i32.add
+    set_global 0
     get_local 10
     i32.const 1
     i32.store
@@ -5104,6 +5224,10 @@
     get_global 0
     get_global 0
     set_local 11
+    get_global 0
+    i32.const 4
+    i32.add
+    set_global 0
     get_local 11
     i32.const 0
     i32.store
